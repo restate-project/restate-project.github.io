@@ -224,6 +224,15 @@ function initGallery() {
 /* ---------- charts ---------- */
 function initCharts() {
   if (typeof Chart === 'undefined') { $$('.chart-box').forEach(b => b.innerHTML = '<p class="note">Charts need network access to load Chart.js.</p>'); return; }
+  /* A chart created before fonts/layout settle can keep a stale width (on phones it
+     used to render twice as wide as its card). Re-measure once everything is ready. */
+  const CHARTS = [];
+  const track = c => { CHARTS.push(c); return c; };
+  const resizeAll = () => CHARTS.forEach(c => c.resize());
+  addEventListener('load', resizeAll);
+  addEventListener('orientationchange', () => setTimeout(resizeAll, 200));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(resizeAll, 50));
+  setTimeout(resizeAll, 600);
   Chart.defaults.font.family = css('--f-sans');
   Chart.defaults.color = C.dim;
   Chart.defaults.borderColor = C.rule;
@@ -232,12 +241,12 @@ function initCharts() {
 
   // main comparison
   const methodColors = [C.gray, C.grayDark, C.mind, C.state];
-  const mainChart = new Chart($('#main-chart'), {
+  const mainChart = track(new Chart($('#main-chart'), {
     type: 'bar',
     data: { labels: BACKBONES, datasets: METHODS.map((m, i) => ({ label: m, data: [], backgroundColor: methodColors[i], borderRadius: 4, maxBarThickness: 46 })) },
     options: { maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toFixed(2)}%` } } },
       scales: { y: { title: { display: true, text: 'Accuracy (%)' } }, x: { grid: { display: false } } } },
-  });
+  }));
   const setMain = ds => {
     const d = MAIN[ds];
     mainChart.data.datasets.forEach((s, i) => s.data = d.map(r => r[i]));
@@ -250,61 +259,61 @@ function initCharts() {
 
   // iterations
   const bbColors = [C.stage, C.mind, C.state];
-  const iterChart = new Chart($('#iter-chart'), {
+  const iterChart = track(new Chart($('#iter-chart'), {
     type: 'line',
     data: { labels: [...Array(10).keys()], datasets: BACKBONES.map((b, i) => ({ label: b, data: [], borderColor: bbColors[i], backgroundColor: bbColors[i], tension: .3, pointRadius: 3 })) },
     options: { maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Self-refinement round' } }, y: { title: { display: true, text: 'Accuracy (%)' } } } },
-  });
+  }));
   const setIter = ds => { iterChart.data.datasets.forEach((s, i) => s.data = ITER[ds][i]); iterChart.update(); };
   segment('#iter-seg', b => setIter(b.dataset.ds)); setIter('versacot');
 
   // leaderboard
   const kindColor = { human: '#d1d5db', closed: '#c9cdd6', open: '#aeb6c4', ft: C.mind, ours: C.state };
-  new Chart($('#board-chart'), {
+  track(new Chart($('#board-chart'), {
     type: 'bar',
     data: { labels: BOARD.map(b => b[0]), datasets: [{ data: BOARD.map(b => b[1]), backgroundColor: BOARD.map(b => kindColor[b[2]]), borderRadius: 3 }] },
     options: { indexAxis: 'y', maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw.toFixed(2)}%` } } },
       scales: { x: { min: 70, max: 90 }, y: { grid: { display: false },
         ticks: { autoSkip: false, font: ctx => ({ size: 11, weight: BOARD[ctx.index][2] === 'ours' ? '600' : '400' }), color: ctx => BOARD[ctx.index][2] === 'ours' ? C.state : C.dim } } } },
-  });
+  }));
 
   // state ablation
-  new Chart($('#state-chart'), {
+  track(new Chart($('#state-chart'), {
     type: 'bar',
     data: { labels: BACKBONES, datasets: STATE_ABL.map((r, i) => ({ label: r[0], data: r[1], borderRadius: 3, maxBarThickness: 22,
       backgroundColor: i === 0 ? C.state : ['#c3c7cf', '#9fcfa6', '#f0b0a8', '#bdb8ee'][i - 1] })) },
     options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { min: 74, max: 83, title: { display: true, text: 'Accuracy (%)' } } } },
-  });
+  }));
 
   // CoT quality
   const cotNames = Object.keys(COT_QUALITY[0]);
   const cotColors = ['#d9dce3', C.gray, C.grayDark, C.mind, C.state];
-  const cotChart = new Chart($('#cot-chart'), {
+  const cotChart = track(new Chart($('#cot-chart'), {
     type: 'bar',
     data: { labels: COT_COLS, datasets: cotNames.map((n, i) => ({ label: n, data: [], backgroundColor: cotColors[i], borderRadius: 3, maxBarThickness: 18 })) },
     options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { min: 5, max: 10, title: { display: true, text: 'Judge score (0–10)' } } } },
-  });
+  }));
   const setCot = bb => { cotChart.data.datasets.forEach(s => s.data = COT_QUALITY[bb][s.label]); cotChart.update(); };
   segment('#cot-seg', b => setCot(+b.dataset.bb)); setCot(2);
 
   // generalization
   const genColors = [C.gray, C.grayDark, C.state];
-  const genChart = new Chart($('#gen-chart'), {
+  const genChart = track(new Chart($('#gen-chart'), {
     type: 'bar',
     data: { labels: BACKBONES, datasets: ['Original', 'Direct SFT', 'ReState'].map((m, i) => ({ label: m === 'Original' ? 'Original (no SFT)' : m, key: m, data: [], backgroundColor: genColors[i], borderRadius: 4, maxBarThickness: 40 })) },
     options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { title: { display: true, text: 'Accuracy (%)' } } } },
-  });
+  }));
   const setGen = ds => { const g = GEN[ds]; genChart.data.datasets.forEach(s => s.data = g[s.key]); fitY(genChart, Object.values(g).flat()); genChart.update(); };
   segment('#gen-seg', b => setGen(b.dataset.ds)); setGen('m3cot');
 
   // option counts
-  new Chart($('#opt-chart'), {
+  track(new Chart($('#opt-chart'), {
     type: 'bar',
     data: { labels: OPTIONS.labels, datasets: [{ data: OPTIONS.counts, backgroundColor: OPTIONS.labels.map(l => l === '4' ? C.state : C.stage), borderRadius: 3 }] },
     options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw.toLocaleString()} samples (${(c.raw / 100).toFixed(2)}%)` } } },
       scales: { x: { title: { display: true, text: 'Number of options' }, grid: { display: false } }, y: { title: { display: true, text: 'Samples' } } } },
-  });
+  }));
 }
 
 /* segmented control helper: toggles .on and calls cb(button) */

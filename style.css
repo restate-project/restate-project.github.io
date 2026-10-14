@@ -247,11 +247,19 @@ mark.warnm { background: var(--warn-50); color: var(--warn); }
 
 /* ---------- 05 results ---------- */
 .chart-box { position: relative; height: 320px; }
+/* hard cap: a chart can never be wider than its card, whatever size Chart.js computed */
+.chart-box > canvas { max-width: 100% !important; }
+/* grid items default to min-width:auto, so a wide canvas or table could push a card
+   past its column (phones showed a chart twice as wide as the screen). Let them shrink. */
+.res-grid > *, .method-grid > *, .ds-row > *, .findings > *, .gallery > *, .demo > *,
+.hero > *, .ev-mats > *, .domains > *, .stats > * { min-width: 0; }
 .chart-box.short { height: 240px; }
 .chart-box.tall { height: 420px; }
 .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.2rem 0; }
 #results > .card + .res-grid, #results > .res-grid + .card { margin-top: 1.2rem; }
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-wrap::-webkit-scrollbar { height: 6px; }
+.table-wrap::-webkit-scrollbar-thumb { background: #cfc8b6; border-radius: 3px; }
 .tbl { width: 100%; border-collapse: collapse; font-size: .86rem; font-variant-numeric: tabular-nums; }
 .tbl th, .tbl td { padding: .5rem .55rem; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
 .tbl th:first-child, .tbl td:first-child { text-align: left; }
@@ -349,6 +357,15 @@ mark.warnm { background: var(--warn-50); color: var(--warn); }
 }
 @media (max-width: 680px) {
   .nav { display: none; }
+  /* phones: charts shorter, tables denser and swipeable, hint that they scroll sideways */
+  .chart-box { height: 260px; }
+  .chart-box.tall { height: 360px; }
+  .tbl { font-size: .78rem; }
+  .tbl th, .tbl td { padding: .4rem .4rem; }
+  .tbl th { font-size: .68rem; }
+  .table-wrap { position: relative; }
+  .table-wrap::after { content: "swipe →"; position: sticky; left: 100%; bottom: 0; float: right;
+    font-size: .64rem; color: var(--dim); background: var(--card); padding: 0 .2rem; }
   .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .pipeline { grid-template-columns: 1fr; }
   .findings, .gallery, .ev-mats { grid-template-columns: 1fr; }
