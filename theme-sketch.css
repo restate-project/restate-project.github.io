@@ -168,17 +168,14 @@ html.theme-sketch .sec-head h2 { position: relative; font: 700 clamp(2.4rem, 4.6
 html.theme-sketch .lede { font-size: 1.12rem; color: #3d3a34; }
 html.theme-sketch .note, html.theme-sketch figcaption { font-size: .95rem; color: var(--dim); }
 html.theme-sketch .kicker { font: 1rem var(--f-sans); letter-spacing: .03em; color: var(--state); }
-html.theme-sketch .card h3, html.theme-sketch .evidence h3 { font: 700 1.55rem var(--f-serif); }
 html.theme-sketch .sk-doodle { position: absolute; pointer-events: none; opacity: .6; }
 html.theme-sketch .sk-stain { position: absolute; pointer-events: none; z-index: 0; }
 
 /* ---------- generic boxes: transparent, frame comes from rough.js ---------- */
-html.theme-sketch .card, html.theme-sketch .evidence, html.theme-sketch .paradigm-wrap, html.theme-sketch .wide-fig,
 html.theme-sketch .q-panel, html.theme-sketch .r-card, html.theme-sketch .timeline, html.theme-sketch .pipeline li,
 html.theme-sketch .dom, html.theme-sketch .fd, html.theme-sketch .gcard, html.theme-sketch .props li, html.theme-sketch .ds-stats div {
   background: transparent; border: 0; box-shadow: none; border-radius: 0;
 }
-html.theme-sketch .card, html.theme-sketch .evidence { padding: 1.4rem 1.5rem; }
 html.theme-sketch .sk-perch-host { margin-top: 4.6rem !important; }
 
 /* small dynamic chips: wobbly CSS borders (they re-render too often for rough.js) */
@@ -209,12 +206,8 @@ html.theme-sketch .r-controls .play { background: transparent; color: var(--ink)
 html.theme-sketch .mini:active, html.theme-sketch .case-tabs button:active { transform: translate(1px, 2px); }
 
 /* ---------- 01 evidence matrices: cross-hatch instead of solid cells ---------- */
-html.theme-sketch .mat { font-family: var(--f-read); }
-html.theme-sketch .mat td { border-radius: var(--hand-r); border: 1.5px solid rgba(43,43,43,.35); }
-html.theme-sketch .mat td.up { color: #1d5e3a; background:
   repeating-linear-gradient(45deg, rgba(46,139,87,calc(.18 + var(--a) * .6)) 0 2px, transparent 2px 6px),
   repeating-linear-gradient(-45deg, rgba(46,139,87,calc(.10 + var(--a) * .4)) 0 1.5px, transparent 1.5px 7px); }
-html.theme-sketch .mat td.down { color: #8e1f14; background:
   repeating-linear-gradient(45deg, rgba(209,52,44,calc(.18 + var(--a) * .6)) 0 2px, transparent 2px 6px),
   repeating-linear-gradient(-45deg, rgba(209,52,44,calc(.10 + var(--a) * .4)) 0 1.5px, transparent 1.5px 7px); }
 
@@ -223,7 +216,6 @@ html.theme-sketch .props li { padding: .75rem .9rem .75rem 2rem; }
 html.theme-sketch .props li:nth-child(odd) { rotate: -1deg; } html.theme-sketch .props li:nth-child(even) { rotate: .8deg; }
 html.theme-sketch .props b { font-family: var(--f-serif); font-size: 1.8rem; }
 html.theme-sketch .wide-fig { padding: 1.3rem; }
-html.theme-sketch .wide-fig img, html.theme-sketch details.orig img { border-radius: 0; }
 
 /* ---------- 03 demo ---------- */
 html.theme-sketch .r-panel { position: relative; padding-top: 78px; }
@@ -269,6 +261,9 @@ html.theme-sketch .tbl td.best { font-weight: 700;
 html.theme-sketch .tbl tr.hl td.best { background:
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40' preserveAspectRatio='none'%3E%3Cpath d='M10 24 C8 7 86 3 93 17 C99 31 32 39 13 31 C3 26 9 13 24 9' fill='none' stroke='%23e0632e' stroke-width='2' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center / 100% 100% no-repeat,
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='30'%3E%3Cpath d='M0 25 L9 5 L18 25' stroke='%23ffd93b' stroke-width='10' stroke-linecap='round' fill='none' opacity='.75'/%3E%3C/svg%3E") left center / 18px 100% repeat-x; }
+html.theme-sketch .tbl td.best, html.theme-sketch .tbl tr.hl td.best { color: #d1342c; }
+html.theme-sketch .tbl td.second, html.theme-sketch .tbl tr.hl td.second { color: #2f6db5; }
+html.theme-sketch .tbl tr.grp td { font-family: var(--f-sans); font-size: .9rem; background: rgba(43,43,43,.05); }
 html.theme-sketch .tbl .yes { color: var(--ok); } html.theme-sketch .tbl small.dl { font-family: var(--f-sans); }
 
 /* ---------- 06 gallery = polaroids ---------- */
@@ -281,7 +276,6 @@ html.theme-sketch .gcard b { font: 700 1.4rem var(--f-serif); }
 html.theme-sketch .gds { font-family: var(--f-sans); font-size: .85rem; }
 
 /* ---------- 07 / BibTeX / footer ---------- */
-html.theme-sketch .limits { position: relative; padding-bottom: 3.6rem; font-size: 1.08rem; }
 html.theme-sketch .bib { padding: .4rem; }
 html.theme-sketch .bib pre { background: transparent; color: #f4f1e8; font: 1.08rem/1.55 var(--f-sans); text-shadow: 0 0 1px rgba(255,255,255,.35); border: 0; }
 html.theme-sketch .copy { color: #f4f1e8; }

@@ -416,7 +416,6 @@ const KIND = {
 const DECOR = [
   ['.title-board', 'chalkboard'],
   ['.card, .paradigm-wrap, .wide-fig', 'card'],
-  ['.evidence', 'clip'],
   ['.hero .stat, .ds-stats > div', 'note'],
   ['.tldr p', 'bubble'],
   ['.fd', 'index'],
@@ -660,12 +659,13 @@ function domainFigures() {
 
 /* ---- characters perched on boxes ---- */
 function perched() {
-  // results: someone sitting on the main chart card, reading the paper
-  const mainCard = $('#main-chart') && $('#main-chart').closest('.card');
-  if (mainCard) {
-    perchHost(mainCard);
-    const a = own({ parent: mainCard, k: 1.0, acc: ['book'], poseFn: P.read, greet: true });
-    a.brain = () => { a.x = mainCard.offsetWidth * 0.5; a.y = 0; };
+  // main results table: standing on top of the card, holding a sign
+  const paperCard = $('#paper-table') && $('#paper-table').closest('.card');
+  if (paperCard) {
+    const a = own({ parent: paperCard, k: 1.0, acc: ['sign'], signText: '9B ≥ 122B', greet: true, dir: -1,
+      poseFn: t => ({ ...STAND, aR1: 2.8, aR2: 0.25, aL1: -2.8, aL2: -0.25, drop: 0.8 * Math.abs(Math.sin(t * 3)) }) });
+    a.flipSign = -1;
+    a.brain = () => { a.x = paperCard.offsetWidth * 0.78; a.y = 0; a.flipSign = a.flipVis; };
   }
   // iteration chart: a figure peeking over the edge (body hidden behind the card)
   const iterCard = $('#iter-chart') && $('#iter-chart').closest('.card');
@@ -677,14 +677,6 @@ function perched() {
       a.x = iterCard.offsetWidth * 0.32; a.y = (BONE.torso + LEG) * a.k * 0.62 + (1 - peek) * 26;
       a.say = peek > 0.85 ? { text: 'round 1 already +2.65!', until: now + 100 } : null;
     };
-  }
-  // leaderboard: standing on top, holding a sign
-  const board = $('#board-chart') && $('#board-chart').closest('.card');
-  if (board) {
-    const a = own({ parent: board, k: 1.0, acc: ['sign'], signText: '9B ≥ 122B', greet: true, dir: -1,
-      poseFn: t => ({ ...STAND, aR1: 2.8, aR2: 0.25, aL1: -2.8, aL2: -0.25, drop: 0.8 * Math.abs(Math.sin(t * 3)) }) });
-    a.flipSign = -1;
-    a.brain = () => { a.x = board.offsetWidth * 0.72; a.y = 0; a.flipSign = a.flipVis; };
   }
   // method: URSM card, thinking ? then !
   const ursm = $('#method .card');
@@ -706,17 +698,6 @@ function perched() {
   if (gal) {
     perchHost(gal);
     patrol(gal, { acc: ['magnifier'], poseFn: (t, a) => a.stop ? ({ ...P.point(t), aR1: 0.9, aR2: 0.4 }) : P.walk(a.ph), speed: 0.05, k: 1.0, inspect: true });
-  }
-  // limitations: someone tripped over a cable
-  const lim = $('.limits');
-  if (lim) {
-    const a = own({ parent: lim, k: 1.05, poseFn: P.lying, greet: true, dir: 1 });
-    a.rot = -90; a.mood = 'sad';
-    a.extra = (J, s) => `<path class="sk-thin" style="stroke:#555" d="M${pt(J.fR)} q${f1(10 * s.k)} ${f1(-14 * s.k)} ${f1(24 * s.k)} ${f1(-4 * s.k)} t${f1(30 * s.k)} 0"/>`;
-    a.brain = (dt, now) => {
-      a.x = lim.offsetWidth - 20; a.y = lim.offsetHeight - 6; a.rot = a.react ? a.rot : -90;
-      a.say = { text: (a.t % 5) < 2.5 ? 'oops — cost of more rounds' : 'open-ended VQA next?', until: now + 100 };
-    };
   }
   // BibTeX: writing on the chalkboard
   const bib = $('.bib');

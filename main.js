@@ -8,20 +8,18 @@
  *
  * Functions (called in order at the bottom):
  *   initParadigmToggle()  01  stage-centric / state-centric switch
- *   initEvidence()        01  "vs Direct SFT" delta matrices, computed from MAIN
  *   initURSM()            02  φ / R+ / R− tabs   (texts in URSM_TEXT below)
  *   initPool()            02  CRSL history-pool FIFO demo (capacity 2)
  *   initDemo()            03  case tabs + round timeline + autoplay (CASES)
  *   initDomains()         04  8 domain cards (DOMAINS)
- *   initDomainTable()     05  per-domain table with backbone switch (DOMAIN)
- *   initAblationTable()   05  break-down ablation with dataset switch (ABLATION)
+ *   initPaperTable()      05  paper Tab.1/2/3, dataset switch + collapse (PAPER)
+ *   initBreakdown()       05  paper Tab.4 break-down ablation (BREAKDOWN)
  *   initGallery()         06  qualitative comparison cards (COMPARE)
  *   fitBanner()               keeps each line of the hero title from wrapping
  *   initBrand()               top-left robot / word hover animations, robot blinking
  *   initSketch()              starts sketch.js (stick figures + rough.js frames)
  *   initMisc()                BibTeX copy, lightbox, scroll reveal, nav highlight
- *   initCharts()              Chart.js: main, iterations, leaderboard, state ablation,
- *                             CoT quality, generalization, option counts
+ *   initCharts()              Chart.js: iterative self-refinement curves (ITER)
  *
  * Depends on data.js (loaded first) and Chart.js 4 (CDN). If Chart.js is unavailable,
  * charts are replaced by a short notice and everything else still works.
@@ -48,24 +46,6 @@ function initParadigmToggle() {
     $$('.tg').forEach(x => x.classList.toggle('on', x === b));
     $$('.pd').forEach(p => p.classList.toggle('on', p.dataset.panel === b.dataset.mode));
   }));
-}
-
-/* ---------- 01 evidence matrices ---------- */
-function initEvidence() {
-  const dsKeys = ['versacot', 'scienceqa', 'm3cot'], dsLab = ['VersaCoT', 'SciQA', 'M³CoT'];
-  const short = ['7B', '8B', '9B'];
-  const build = (id, mi) => {
-    let h = '<tr><th></th>' + short.map(s => `<th>${s}</th>`).join('') + '</tr>';
-    dsKeys.forEach((k, i) => {
-      h += `<tr><th>${dsLab[i]}</th>` + MAIN[k].map(r => {
-        const d = r[mi] - r[0];
-        return `<td class="${d >= 0 ? 'up' : 'down'}" style="--a:${Math.min(1, Math.abs(d) / 6).toFixed(2)}">${fmt(d)}</td>`;
-      }).join('') + '</tr>';
-    });
-    $(id).innerHTML = h;
-  };
-  build('#mat-mcot', 1);
-  build('#mat-restate', 3);
 }
 
 /* ---------- 02 URSM tabs ---------- */
@@ -185,31 +165,61 @@ function initDomains() {
     <div class="dom"><b>${d.name}</b><span>${d.desc}</span><small>${d.src} · 1,250</small></div>`).join('');
 }
 
-/* ---------- 05 tables ---------- */
-function initDomainTable() {
-  const tbl = $('#domain-table');
-  const render = bb => {
-    const rows = DOMAIN[bb], names = Object.keys(rows);
-    const ft = names.filter(n => n !== 'Zero-shot');
-    const best = DOMAIN_COLS.map((_, j) => Math.max(...ft.map(n => rows[n][j])));
-    tbl.innerHTML = `<thead><tr><th>${BACKBONES[bb]}</th>${DOMAIN_COLS.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>` +
-      names.map(n => `<tr class="${n.startsWith('ReState') ? 'hl' : ''} ${n === 'Zero-shot' ? 'zs' : ''}"><td>${n}</td>${rows[n].map((v, j) =>
-        `<td class="${n !== 'Zero-shot' && v === best[j] ? 'best' : ''}">${v.toFixed(2)}</td>`).join('')}</tr>`).join('') + '</tbody>';
+/* ---------- 05 paper tables (Tab.1 / 2 / 3) ----------
+   Rows come straight from PAPER in data.js. Zero-shot / baseline rows and the group
+   headers stay hidden until "Show all models"; the toggle only flips a class, so the
+   rough.js frame around the card is not torn down and rebuilt on every click.      */
+function initPaperTable() {
+  const tbl = $('#paper-table'), wrap = $('#paper-wrap'), btn = $('#zs-toggle');
+  if (!tbl) return;
+  let showAll = false, key = 'versacot';
+  const cell = v => {                                   // '66.40*' -> red, '66.40^' -> blue
+    const m = /^(.*?)([*^])?$/.exec(v);
+    return `<td class="${m[2] === '*' ? 'best' : m[2] === '^' ? 'second' : ''}">${m[1]}</td>`;
   };
-  segment('#bb-seg', b => render(+b.dataset.bb));
-  render(2);
+  const render = () => {
+    const t = PAPER[key];
+    const span = t.lead.length + 1 +
+      (t.cols ? t.cols.length : t.groups.reduce((n, g) => n + g[1].length, 0));
+    const head = t.groups
+      ? `<tr>${t.lead.map(c => `<th rowspan="2">${c}</th>`).join('')}` +
+        t.groups.map(([g, sub]) => `<th colspan="${sub.length}" class="grp-col">${g}</th>`).join('') +
+        `<th rowspan="2">${t.last}</th></tr><tr>` +
+        t.groups.map(([, sub]) => sub.map(c => `<th>${c}</th>`).join('')).join('') + '</tr>'
+      : `<tr>${[...t.lead, ...t.cols, t.last].map(c => `<th>${c}</th>`).join('')}</tr>`;
+    const body = t.rows.map(r => r[0] === 'g'
+      ? `<tr class="grp zs-row"><td colspan="${span}">${r[1]}</td></tr>`
+      : `<tr class="${r[0] === 'o' ? 'hl' : ''}${r[0] === 'z' ? ' zs-row' : ''}">` +
+        r.slice(1, 1 + t.lead.length).map(v => `<td>${v}</td>`).join('') +
+        r.slice(1 + t.lead.length).map(cell).join('') + '</tr>').join('');
+    tbl.innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
+    tbl.classList.toggle('compact', !showAll);
+    $('#paper-note').innerHTML = `${t.tab} of the paper. ${t.note}`;
+    wrap.scrollLeft = 0;
+  };
+  segment('#paper-seg', b => { key = b.dataset.ds; render(); });
+  btn.addEventListener('click', () => {
+    showAll = !showAll;
+    btn.textContent = showAll ? 'Matched backbones only' : 'Show all models';
+    tbl.classList.toggle('compact', !showAll);
+  });
+  render();
 }
 
-function initAblationTable() {
-  const tbl = $('#abl-table'), mk = v => v ? '<span class="yes">✓</span>' : '<span class="no">✗</span>';
-  const render = ds => {
-    const rows = ABLATION[ds];
-    tbl.innerHTML = '<thead><tr><th>Scheme</th><th>URSM</th><th>SHS</th><th>ISR</th>' + BACKBONES.map(b => `<th>${b.replace('Qwen', 'Q')}</th>`).join('') + '</tr></thead><tbody>' +
-      rows.map((r, i) => `<tr class="${i === rows.length - 1 ? 'hl' : ''}"><td>${r[0]}</td><td>${mk(r[1])}</td><td>${mk(r[2])}</td><td>${mk(r[3])}</td>` +
-        r[4].map((v, j) => `<td>${v.toFixed(2)}${i ? `<small class="dl">${fmt(v - rows[0][4][j])}</small>` : ''}</td>`).join('') + '</tr>').join('') + '</tbody>';
-  };
-  segment('#abl-seg', b => render(b.dataset.ds));
-  render('versacot');
+/* ---------- 05 break-down ablation (Tab.4) ---------- */
+function initBreakdown() {
+  const tbl = $('#bd-table');
+  if (!tbl) return;
+  const mk = v => v ? '<span class="yes">&#10003;</span>' : '<span class="no">&#10007;</span>';
+  tbl.innerHTML =
+    '<thead><tr><th rowspan="2">Scheme</th><th rowspan="2">URSM</th>' +
+    '<th colspan="2" class="grp-col">CRSL</th>' +
+    BREAKDOWN.cols.map(c => `<th rowspan="2">${c}</th>`).join('') +
+    '</tr><tr><th>SHS</th><th>ISR</th></tr></thead><tbody>' +
+    BREAKDOWN.rows.map((r, i) => `<tr class="${i === BREAKDOWN.rows.length - 1 ? 'hl' : ''}">` +
+      `<td>${r[0]}</td><td>${mk(r[1])}</td><td>${mk(r[2])}</td><td>${mk(r[3])}</td>` +
+      r.slice(4).map(([v, gap]) => `<td>${v}${gap ? `<small class="gap">(${gap})</small>` : ''}</td>`).join('') +
+      '</tr>').join('') + '</tbody>';
 }
 
 /* ---------- 06 gallery ---------- */
@@ -237,25 +247,6 @@ function initCharts() {
   Chart.defaults.color = C.dim;
   Chart.defaults.borderColor = C.rule;
   Chart.defaults.plugins.legend.labels.boxWidth = 12;
-  const fitY = (chart, vals, lo = 2, hi = 1) => { chart.options.scales.y.min = Math.floor(Math.min(...vals) - lo); chart.options.scales.y.max = Math.ceil(Math.max(...vals) + hi); };
-
-  // main comparison
-  const methodColors = [C.gray, C.grayDark, C.mind, C.state];
-  const mainChart = track(new Chart($('#main-chart'), {
-    type: 'bar',
-    data: { labels: BACKBONES, datasets: METHODS.map((m, i) => ({ label: m, data: [], backgroundColor: methodColors[i], borderRadius: 4, maxBarThickness: 46 })) },
-    options: { maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toFixed(2)}%` } } },
-      scales: { y: { title: { display: true, text: 'Accuracy (%)' } }, x: { grid: { display: false } } } },
-  }));
-  const setMain = ds => {
-    const d = MAIN[ds];
-    mainChart.data.datasets.forEach((s, i) => s.data = d.map(r => r[i]));
-    fitY(mainChart, d.flat()); mainChart.update();
-    const gains = [0, 1, 2].map(m => d.map(r => r[3] - r[m]));
-    const rng = g => `${Math.min(...g).toFixed(2)}–${Math.max(...g).toFixed(2)}`;
-    $('#main-note').innerHTML = `ReState gain: <b>${rng(gains[0])}</b> over Direct SFT, <b>${rng(gains[1])}</b> over Multimodal-CoT, <b>${rng(gains[2])}</b> over MIND (pts, across backbones).`;
-  };
-  segment('#ds-seg', b => setMain(b.dataset.ds)); setMain('versacot');
 
   // iterations
   const bbColors = [C.stage, C.mind, C.state];
@@ -267,53 +258,6 @@ function initCharts() {
   const setIter = ds => { iterChart.data.datasets.forEach((s, i) => s.data = ITER[ds][i]); iterChart.update(); };
   segment('#iter-seg', b => setIter(b.dataset.ds)); setIter('versacot');
 
-  // leaderboard
-  const kindColor = { human: '#d1d5db', closed: '#c9cdd6', open: '#aeb6c4', ft: C.mind, ours: C.state };
-  track(new Chart($('#board-chart'), {
-    type: 'bar',
-    data: { labels: BOARD.map(b => b[0]), datasets: [{ data: BOARD.map(b => b[1]), backgroundColor: BOARD.map(b => kindColor[b[2]]), borderRadius: 3 }] },
-    options: { indexAxis: 'y', maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw.toFixed(2)}%` } } },
-      scales: { x: { min: 70, max: 90 }, y: { grid: { display: false },
-        ticks: { autoSkip: false, font: ctx => ({ size: 11, weight: BOARD[ctx.index][2] === 'ours' ? '600' : '400' }), color: ctx => BOARD[ctx.index][2] === 'ours' ? C.state : C.dim } } } },
-  }));
-
-  // state ablation
-  track(new Chart($('#state-chart'), {
-    type: 'bar',
-    data: { labels: BACKBONES, datasets: STATE_ABL.map((r, i) => ({ label: r[0], data: r[1], borderRadius: 3, maxBarThickness: 22,
-      backgroundColor: i === 0 ? C.state : ['#c3c7cf', '#9fcfa6', '#f0b0a8', '#bdb8ee'][i - 1] })) },
-    options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { min: 74, max: 83, title: { display: true, text: 'Accuracy (%)' } } } },
-  }));
-
-  // CoT quality
-  const cotNames = Object.keys(COT_QUALITY[0]);
-  const cotColors = ['#d9dce3', C.gray, C.grayDark, C.mind, C.state];
-  const cotChart = track(new Chart($('#cot-chart'), {
-    type: 'bar',
-    data: { labels: COT_COLS, datasets: cotNames.map((n, i) => ({ label: n, data: [], backgroundColor: cotColors[i], borderRadius: 3, maxBarThickness: 18 })) },
-    options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { min: 5, max: 10, title: { display: true, text: 'Judge score (0–10)' } } } },
-  }));
-  const setCot = bb => { cotChart.data.datasets.forEach(s => s.data = COT_QUALITY[bb][s.label]); cotChart.update(); };
-  segment('#cot-seg', b => setCot(+b.dataset.bb)); setCot(2);
-
-  // generalization
-  const genColors = [C.gray, C.grayDark, C.state];
-  const genChart = track(new Chart($('#gen-chart'), {
-    type: 'bar',
-    data: { labels: BACKBONES, datasets: ['Original', 'Direct SFT', 'ReState'].map((m, i) => ({ label: m === 'Original' ? 'Original (no SFT)' : m, key: m, data: [], backgroundColor: genColors[i], borderRadius: 4, maxBarThickness: 40 })) },
-    options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { title: { display: true, text: 'Accuracy (%)' } } } },
-  }));
-  const setGen = ds => { const g = GEN[ds]; genChart.data.datasets.forEach(s => s.data = g[s.key]); fitY(genChart, Object.values(g).flat()); genChart.update(); };
-  segment('#gen-seg', b => setGen(b.dataset.ds)); setGen('m3cot');
-
-  // option counts
-  track(new Chart($('#opt-chart'), {
-    type: 'bar',
-    data: { labels: OPTIONS.labels, datasets: [{ data: OPTIONS.counts, backgroundColor: OPTIONS.labels.map(l => l === '4' ? C.state : C.stage), borderRadius: 3 }] },
-    options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw.toLocaleString()} samples (${(c.raw / 100).toFixed(2)}%)` } } },
-      scales: { x: { title: { display: true, text: 'Number of options' }, grid: { display: false } }, y: { title: { display: true, text: 'Samples' } } } },
-  }));
 }
 
 /* segmented control helper: toggles .on and calls cb(button) */
@@ -396,6 +340,6 @@ function initMisc() {
 document.addEventListener('DOMContentLoaded', () => {
   loadColors();
   fitBanner(); initBrand(); initSketch();
-  initParadigmToggle(); initEvidence(); initURSM(); initPool(); initDemo(); initDomains();
-  initDomainTable(); initAblationTable(); initGallery(); initMisc(); initCharts();
+  initParadigmToggle(); initURSM(); initPool(); initDemo(); initDomains();
+  initPaperTable(); initBreakdown(); initGallery(); initMisc(); initCharts();
 });
