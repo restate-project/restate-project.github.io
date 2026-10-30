@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ReState — From Stages to States: Unified Iterative Reasoning for MLLMs</title>
+<title>ReState - From Stages to States: Unified Iterative Reasoning for MLLMs</title>
 <meta name="description" content="ReState reformulates multimodal chain-of-thought from a stage-driven pipeline into a state-driven iterative process: one MLLM constructs, preserves, and corrects its own reasoning state." />
 <!-- citation_* tags are what Google Scholar reads to index a paper page.
      TODO: uncomment citation_pdf_url once the PDF / arXiv entry is online. -->
@@ -23,13 +23,13 @@
 <meta name="citation_publication_date" content="2026" />
 <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2610.15620" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="ReState — From Stages to States" />
+<meta property="og:title" content="ReState - From Stages to States" />
 <meta property="og:description" content="One MLLM constructs, preserves, and corrects its own reasoning state." />
 <meta property="og:image" content="assets/fig1.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" type="image/png" href="assets/favicon.png" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-<!-- fonts: local copies (Caveat, Patrick Hand, Inter — SIL OFL). No external requests: the page works offline and loads fast in every region. -->
+<!-- fonts: local copies (Caveat, Patrick Hand, Inter - SIL OFL). No external requests: the page works offline and loads fast in every region. -->
 <link rel="stylesheet" href="vendor/fonts.css" />
 <!-- Styles: style.css = base layout, theme-sketch.css = hand-drawn stick-figure look, intro.css = opening animation -->
 <link rel="stylesheet" href="style.css" />
@@ -62,7 +62,7 @@
     </div>
     <div class="in-final">
       <h2 class="in-title"><span class="in-tl">From <span class="in-stage-w">Stages</span> to <span class="in-state-w">States</span>:</span><span class="in-tl in-tl2">Unified Iterative Reasoning <span class="in-tail">for MLLMs</span></span></h2>
-      <p class="in-exp"><b>Re</b>State = <b>Re</b>asoning-<b>State</b> Refinement</p>
+      <p class="in-exp"><strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong> = <b>Re</b>asoning-<b>State</b> Refinement</p>
     </div>
   </div>
   <button class="in-skip" type="button">Skip ›</button>
@@ -70,17 +70,17 @@
 <script src="intro.js"></script>
 
 <!-- =====================================================================
-     TOP BAR  — nav links must match section ids below
+     TOP BAR  - nav links must match section ids below
      ===================================================================== -->
 <header class="bar">
   <div class="bar-inner">
-    <a class="brand" href="#top" aria-label="ReState — back to top">
+    <a class="brand" href="#top" aria-label="ReState - back to top">
       <!-- robot logo in two layers (head tilts, body bobs, eyes blink) + the word (tilts on its own). main.js initBrand() -->
       <span class="brand-bot" aria-hidden="true">
         <span class="bot-body"><img src="assets/logo_body.png" alt="" /></span>
         <span class="bot-head"><img src="assets/logo_head.png" alt="" /><i class="bot-lid l"></i><i class="bot-lid r"></i></span>
       </span>
-      <span class="brand-word"><span class="re">Re</span><span class="st">State</span></span>
+      <span class="brand-word restate-name"><span class="re restate-re">Re</span><span class="st restate-state">State</span></span>
     </a>
     <nav class="nav">
       <a href="#paradigm">Paradigm</a>
@@ -133,21 +133,21 @@
     <div class="links">
       <a class="btn primary" href="http://arxiv.org/abs/2610.15620" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z M14 2v6h6" /></svg>Paper</a>
       <a class="btn" href="https://github.com/YuChuang1205/ReState" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6" /></svg>Code</a>
-      <a class="btn" href="#dataset"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>VersaCoT-10K</a>
+      <a class="btn" href="https://huggingface.co/datasets/YuChuang1205/VersaCoT-10K"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>VersaCoT-10K</a>
       <a class="btn" href="#cite"><svg viewBox="0 0 24 24"><path d="M7 7h4v4H8v3H5v-4zM15 7h4v4h-3v3h-3v-4z"/></svg>BibTeX</a>
     </div>
   </div>
 
   <div class="hero-text">
-    <p class="expand"><b><span class="w-stage">Re</span><span class="w-state">State</span></b> = <b>Re</b>asoning-<b>State</b> Refinement</p>
+    <p class="expand"><strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong> = <b>Re</b>asoning-<b>State</b> Refinement</p>
 
 
-    <!-- Headline numbers (all from the paper; see data.js header for sources) -->
+    <!-- Key contributions: one shared model, VersaCoT-10K, backbone adaptability, and multi-dataset gains -->
     <div class="stats">
-      <div class="stat"><b>81.90</b><span>VersaCoT-10K with a 9B model — above every open-source zero-shot model except the 2.8T Kimi-K3</span></div>
-      <div class="stat"><b>89.00</b><span>M³CoT — only 2.61 pts below human performance</span></div>
-      <div class="stat"><b class="c-state">+13.07</b><span>pts over two-stage Multimodal-CoT on M³CoT</span></div>
-      <div class="stat"><b>1 model</b><span>to deploy (vs. two for MIND), with 31.2% less training time</span></div>
+      <div class="stat"><b>One model</b><span>Unifies reasoning construction, preservation, and correction within a single model.</span></div>
+      <div class="stat"><b>10K CoTs</b><span>VersaCoT-10K provides quality-controlled CoT annotations across 8 visual reasoning domains.</span></div>
+      <div class="stat"><b class="c-state">Adaptable</b><span>A shared reasoning framework validated on Qwen2.5-VL, Qwen3-VL, and Qwen3.5 backbones.</span></div>
+      <div class="stat"><b style="white-space: nowrap;">Stronger</b><span>Outperforms Direct SFT, Multimodal-CoT, and MIND on VersaCoT-10K, ScienceQA, and M³CoT.</span></div>
     </div>
   </div>
 
@@ -159,7 +159,7 @@
      TL;DR
      ===================================================================== -->
 <section class="tldr">
-  <p><span class="tag">TL;DR</span> Learning-based multimodal CoT methods usually chain separately trained <em class="w-stage">stages</em> (generate a CoT, then answer). ReState instead trains <strong>one MLLM</strong> as a shared <em class="w-state">state-update operator</em>: given an empty, correct, or erroneous reasoning state, it outputs a refined state and an answer. Trained also on its own historical states and applied recursively at inference, the same model <strong>constructs, preserves, and corrects</strong> its chain-of-thought — no critic, reflection module, or separate correction stage.</p>
+  <p><span class="tag">TL;DR</span> <strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong> is a <strong>unified iterative reasoning framework</strong> that reformulates multimodal reasoning from a <strong class="w-stage">stage-driven pipeline</strong> into a <strong class="w-state">state-driven dynamic process</strong>.</p>
 </section>
 
 <!-- =====================================================================
@@ -169,15 +169,15 @@
   <div class="sec-head">
     <span class="sec-num">01</span>
     <h2>Stage-centric vs. state-centric</h2>
-    <p class="lede">Most learning-based MCoT methods assign reasoning behaviors to predefined stages with stage-specific models, mappings, or objectives. ReState asks a different question: not <em>which stage is the model in</em>, but <em>what reasoning state does it currently have, and how should that state be updated?</em></p>
-  </div>
-
-  <div class="toggle" role="tablist">
-    <button class="tg" data-mode="stage" role="tab">Stage-centric <small>(prior work)</small></button>
-    <button class="tg on" data-mode="state" role="tab">State-centric <small>(ReState)</small></button>
+    <p class="lede">Most existing learning-based MCoT methods follow a <em class="w-stage">stage-centric paradigm</em>, assigning reasoning behaviors to predefined stages with separate optimization. This fragments reasoning and introduces a gap between the reasoning states used during training and those encountered at inference. <strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong> reformulates multimodal reasoning as a <em class="w-state">state-driven dynamic process</em>, unifying reasoning construction, preservation, and correction through a shared state-update operator.</p>
   </div>
 
   <div class="paradigm-wrap">
+    <div class="toggle" role="tablist">
+      <button class="tg" data-mode="stage" role="tab">Stage-centric <small>(prior work)</small></button>
+      <button class="tg on" data-mode="state" role="tab">State-centric <small>(<strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong>)</small></button>
+    </div>
+
     <div class="pd pd-stage" data-panel="stage">
       <div class="flow">
         <div class="box in">Multimodal input<br><code>X = {I, Q, O, C}</code></div>
@@ -192,7 +192,7 @@
       </div>
       <div class="gap-note">
         <span class="warn">!</span>
-        <div><b>Fragmented reasoning.</b> Construction, discrimination, and correction live in separate stages with separate objectives — there is no unified mechanism for how reasoning <em>evolves</em>.</div>
+        <div><b>Fragmented reasoning.</b> Construction, discrimination, and correction live in separate stages with separate objectives. There is no unified mechanism for how reasoning <em>evolves</em>.</div>
       </div>
       <div class="gap-note">
         <span class="warn">!</span>
@@ -218,12 +218,15 @@
     </div>
   </div>
 
-  <!-- Paper Figure 1 (used to sit behind a "view original" toggle) -->
-  <figure class="card wide-fig">
-    <img class="zoom" src="assets/fig1.jpg" alt="Figure 1: comparison of reasoning paradigms and performance" loading="lazy" />
-    <figcaption><b>Figure 1.</b> Stage-centric pipelines vs. state-centric recursive refinement, and
-      accuracy across three backbones on VersaCoT-10K, ScienceQA and M&sup3;CoT.</figcaption>
-  </figure>
+  <!-- Paper Figure 1: collapsed by default -->
+  <details class="paper-figure">
+    <summary>View original paper figure (Figure 1)</summary>
+    <figure class="card wide-fig">
+      <img class="zoom" src="assets/fig1.jpg" alt="Figure 1: comparison of reasoning paradigms and performance" loading="lazy" />
+      <figcaption><b>Figure 1.</b> Stage-centric pipelines vs. state-centric recursive refinement, and
+        accuracy across three backbones on VersaCoT-10K, ScienceQA and M&sup3;CoT.</figcaption>
+    </figure>
+  </details>
 </section>
 
 <!-- =====================================================================
@@ -233,13 +236,13 @@
   <div class="sec-head">
     <span class="sec-num">02</span>
     <h2>Method: URSM + CRSL</h2>
-    <p class="lede">Two complementary components. <b>URSM</b> puts construction, preservation, and correction into one shared state space; <b>CRSL</b> closes the loop by training on the model's own historical states and recursing at inference.</p>
+    <p class="lede"><b>URSM</b> unifies reasoning construction, correct reasoning preservation, and erroneous reasoning correction as state transitions learned jointly by a single MLLM. <b>CRSL</b> incorporates self-generated historical reasoning states during training and recursively updates the current state at inference, mitigating the training–inference reasoning-state gap and enabling iterative self-refinement without additional critics, reflection modules, or separate correction stages.</p>
   </div>
 
   <div class="method-grid">
     <article class="card">
       <p class="kicker">Unified Reasoning State Modeling</p>
-      <h3>URSM — one operator, three behaviors</h3>
+      <h3>URSM: one operator, three behaviors</h3>
       <div class="eq">(S<sub>t+1</sub>, Â<sub>t+1</sub>) = M<sub>θ</sub>(X, S<sub>t</sub>), &nbsp; S<sub>t</sub> ∈ {φ, R<sup>+</sup>, R<sup>−</sup>}</div>
       <div class="ursm-tabs">
         <button class="ut on" data-s="empty"><b>φ</b>Empty</button>
@@ -247,12 +250,12 @@
         <button class="ut" data-s="neg"><b>R<sup>−</sup></b>Erroneous</button>
       </div>
       <div class="ursm-body" id="ursm-body"></div>
-      <p class="note">X = {image, question, options, caption}; φ is the token <code>[EMPTY_SOLUTION]</code>. Each epoch, every sample yields two views: one with φ and one with a non-empty state, where R<sup>+</sup> and R<sup>−</sup> are sampled with equal probability.</p>
+      <p class="note">X = {image, question, options, caption}; φ is represented by the token <code>[EMPTY_SOLUTION]</code>. In each training epoch, URSM constructs two views per sample: one with φ and one with a non-empty reasoning state, sampled from either R<sup>+</sup> or R<sup>−</sup> with equal probability.</p>
     </article>
 
     <article class="card">
       <p class="kicker">Closed-Loop Reasoning-State Learning</p>
-      <h3>CRSL — learn from your own history</h3>
+      <h3>CRSL: learning from self-generated states</h3>
       <div class="eq">H<sub>i</sub> = {Ŝ<sup>i</sup><sub>(1)</sub>, …, Ŝ<sup>i</sup><sub>(k)</sub>}, &nbsp; S<sub>t</sub> ∈ {φ, R<sup>+</sup>, R<sup>−</sup>, R<sup>h</sup>}</div>
       <div class="loop3">
         <span>state generation</span><i>→</i><span>state feedback</span><i>→</i><span>state update</span><i class="back">↺</i>
@@ -280,7 +283,7 @@
 
   <figure class="wide-fig">
     <img class="zoom" src="assets/fig2.jpg" alt="Figure 2: overview of the ReState framework" loading="lazy" />
-    <figcaption><b>Figure 2.</b> During training, URSM learns a shared state-update operator from empty, correct, and erroneous reasoning states, while CRSL feeds model-generated historical states back into training to reduce the training–inference reasoning-state mismatch. At inference, the same model recursively updates the current reasoning state and answer.</figcaption>
+    <figcaption><b>Figure 2.</b> Overview of the ReState framework. During training, URSM learns a shared state-update operator from empty, correct, and erroneous reasoning states, while CRSL feeds model-generated historical states back into training to reduce the training-inference reasoning-state mismatch. At inference, the same model recursively updates the current reasoning state and answer, enabling iterative self-refinement without additional critics, reflection modules, or separate correction stages.</figcaption>
   </figure>
 </section>
 
@@ -291,7 +294,7 @@
   <div class="sec-head">
     <span class="sec-num">03</span>
     <h2>Watch a reasoning state evolve</h2>
-    <p class="lede">Real outputs from the paper (Figs. 14–16). Step through the rounds: <mark class="err">red</mark> marks erroneous reasoning, <mark class="warnm">amber</mark> a reasoning–answer mismatch, <mark class="fix">green</mark> the corrected or preserved evidence. One model does all of it.</p>
+    <p class="lede">Examples from VersaCoT-10K, ScienceQA, and M&sup3;CoT (Figs. 14–16) show how the same model revisits its previous reasoning state to correct errors, align answers with valid reasoning, and preserve successful updates. Step through the rounds to follow this process: <mark class="err">red</mark> highlights reasoning errors, <mark class="warnm">amber</mark> indicates a mismatch between reasoning and the selected answer, and <mark class="fix">green</mark> highlights corrected or preserved evidence.</p>
   </div>
 
   <div class="case-tabs" id="case-tabs"></div>
@@ -316,7 +319,6 @@
         <button class="mini" id="r-next">Next ▸</button>
       </div>
       <div class="r-card" id="r-card"></div>
-      <p class="note">The input-state labels (construct / correct / preserve) are our annotations for readability. The model only receives its previous state — it is never told whether that state is right or wrong.</p>
     </div>
   </div>
 </section>
@@ -328,7 +330,7 @@
   <div class="sec-head">
     <span class="sec-num">04</span>
     <h2>VersaCoT-10K</h2>
-    <p class="lede">10,000 single-image multiple-choice samples with visually grounded, quality-controlled CoT across eight heterogeneous visual reasoning domains — 1,250 per domain, split 7 : 1 : 2 into train / val / test.</p>
+    <p class="lede"><b>VersaCoT-10K</b> contains 10,000 single-image multiple-choice samples spanning eight heterogeneous visual reasoning domains. Its construction consists of three stages: data collection and standardization, CoT annotation and quality control, and reasoning-state augmentation. The resulting dataset provides diverse supervision for multi-domain reasoning and reasoning-state refinement. Each domain contains 1,250 samples, with a 7 : 1 : 2 train / validation / test split.</p>
   </div>
 
   <div class="ds-stats">
@@ -340,18 +342,21 @@
 
   <ol class="pipeline">
     <li><span>1</span><b>Collect &amp; standardize</b><p>Reasoning-intensive samples from 8 public benchmarks, unified into one multiple-choice format with options, answer, and image caption.</p></li>
-    <li><span>2</span><b>Annotate &amp; filter</b><p>Gemini-3-Flash writes visually grounded CoTs. Rule filters (200–4,000 chars, answer-leak phrases) plus a separate Gemini-3.5-Flash judge (3 binary checks + 5 scores; ≥ 8 kept).</p></li>
+    <li><span>2</span><b>Annotate &amp; filter</b><p>Gemini-3-Flash writes visually grounded CoTs. Rule filters (200–4,000 chars, answer-leak phrases) plus a separate Gemini-3.5-Flash judge (all three binary checks must pass, and each of the five scores must be ≥ 8).</p></li>
     <li><span>3</span><b>Augment states</b><p>Following RAD, each CoT gets positive states (diverse, semantically consistent) and hard negative states (similar, semantically reversed). Historical states R<sup>h</sup> are generated online during training.</p></li>
   </ol>
 
   <div class="domains" id="domains"></div>
 
-  <figure class="card fig-card wide-fig">
-    <img class="zoom" src="assets/fig3.jpg" alt="Figure 3: construction pipeline of VersaCoT-10K" loading="lazy" />
-    <figcaption><b>Figure 3.</b> Construction pipeline of VersaCoT-10K.</figcaption>
-    <img class="zoom" src="assets/fig4_stats.jpg" alt="Figure 7: statistics of VersaCoT-10K" loading="lazy" style="margin-top:1.2rem" />
-    <figcaption><b>Figure 7.</b> Sources and splits per domain, CoT length distribution, and option counts.</figcaption>
-  </figure>
+  <details class="paper-figure">
+    <summary>View dataset construction and statistics (Figures 3 &amp; 7)</summary>
+    <figure class="card fig-card wide-fig">
+      <img class="zoom" src="assets/fig3.jpg" alt="Figure 3: construction pipeline of VersaCoT-10K" loading="lazy" />
+      <figcaption><b>Figure 3.</b> Construction pipeline of VersaCoT-10K.</figcaption>
+      <img class="zoom" src="assets/fig4_stats.jpg" alt="Figure 7: statistics of VersaCoT-10K" loading="lazy" style="margin-top:1.2rem" />
+      <figcaption><b>Figure 7.</b> Sources and splits per domain, CoT length distribution, and option counts.</figcaption>
+    </figure>
+  </details>
 </section>
 
 <!-- =====================================================================
@@ -361,13 +366,13 @@
   <div class="sec-head">
     <span class="sec-num">05</span>
     <h2>Results</h2>
-    <p class="lede">All comparisons below use the same backbone and training setting. Across three backbones, ReState beats Direct SFT, Multimodal-CoT, and MIND by <b>0.90–4.60</b> pts on VersaCoT-10K, <b>0.83–2.87</b> on ScienceQA, and <b>0.18–13.07</b> on M³CoT.</p>
+    <p class="lede">Under matched backbone and training settings across three backbones, <strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong> outperforms Direct SFT, Multimodal-CoT, and MIND by <b>0.90%–4.60%</b> on VersaCoT-10K, <b>0.83%–2.87%</b> on ScienceQA, and <b>0.18%–13.07%</b> on M³CoT.</p>
   </div>
 
   <div class="findings">
-    <div class="fd"><b>Best average on every dataset × backbone</b><p>9 / 9 matched-backbone settings, with gains spread across domains and sub-tasks rather than one category — e.g. M³CoT Theory 61.90 → 90.48 over Direct SFT (Qwen3.5-9B).</p></div>
-    <div class="fd"><b>Not just more inference rounds</b><p>Without iterative self-refinement — i.e. at inference cost comparable to MIND — ReState still leads MIND by 0.15–0.90 pts on VersaCoT-10K.</p></div>
-    <div class="fd"><b>Cheaper to train and serve</b><p>Training time 9.86 h → 6.78 h (−31.2%) vs. MIND, and one model to deploy instead of two.</p></div>
+    <div class="fd"><b>Consistent improvements</b><p>Best average accuracy in all 9 matched-backbone settings across 3 datasets and 3 backbones. For example, on VersaCoT-10K with Qwen3.5-9B, average accuracy improves from 77.80% with Direct SFT to 81.90% with <strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong>.</p></div>
+    <div class="fd"><b>Component ablation</b><p>URSM improves accuracy by 0.50%–2.55% on VersaCoT-10K. Adding either training-time self-history states or inference-time iterative self-refinement brings further gains, with the full framework performing best across all three backbones.</p></div>
+    <div class="fd"><b>Iterative refinement</b><p>One refinement round improves accuracy by 1.10%–2.65% on VersaCoT-10K. Most gains occur in the first few rounds, followed by stabilization with minor fluctuations.</p></div>
   </div>
 
   <!-- Main results: the paper's Table 1 / 2 / 3, rendered from PAPER in data.js -->
@@ -382,7 +387,7 @@
     </div>
     <p class="note tbl-legend">
       <span><b class="best-k">Red</b> = best, <b class="second-k">blue</b> = second best, compared inside
-      each 4-row backbone group. Highlighted rows are ReState.</span>
+      each 4-row backbone group. Highlighted rows are <strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong>.</span>
       <button class="mini" id="zs-toggle" type="button">Show all models</button>
     </p>
     <div class="table-wrap" id="paper-wrap"><table class="tbl paper" id="paper-table"></table></div>
@@ -391,34 +396,30 @@
 
   <!-- Ablation column -->
   <div class="sec-head sub">
-    <h3>Ablation: what each piece buys you</h3>
-    <p class="lede">Progressive ablation on VersaCoT-10K across the three backbones.
-      <b>URSM</b> alone adds <b>0.50–2.55 pts</b> over the baseline. On top of it, training-time
-      <b>SHS</b> adds another <b>0.30–2.15</b>, and inference-time <b>ISR</b> adds <b>0.45–0.55</b>.
-      Together they land at 77.05 / 79.25 / 81.90.</p>
+    <h3>Component Ablation and Iterative Refinement</h3>
+    <p class="lede">On VersaCoT-10K, <b>URSM</b> improves accuracy by <b>0.50%–2.55%</b> over Direct SFT.
+      Adding <b>SHS</b> or <b>ISR</b> separately to URSM adds <b>0.30%–2.15%</b> or <b>0.45%–0.55%</b>, respectively.
+      The full framework performs best across all three backbones, reaching <b>77.05%</b>, <b>79.25%</b>, and <b>81.90%</b>
+      on Qwen2.5-VL-7B, Qwen3-VL-8B, and Qwen3.5-9B, respectively.</p>
+    <p class="lede">Across VersaCoT-10K, ScienceQA, and M&sup3;CoT, iterative refinement delivers most of its gains in the first few rounds,
+      after which accuracy stabilizes with minor fluctuations. The figures below summarize the component ablations and refinement trajectories.</p>
   </div>
 
-  <div class="card">
-    <div class="card-head"><h3>Break-down ablation (VersaCoT-10K)</h3></div>
-    <div class="table-wrap"><table class="tbl bd" id="bd-table"></table></div>
-    <p class="note">SHS = training-time self-history states, ISR = inference-time iterative
-      self-refinement — both parts of CRSL. The value in parentheses is the gap still left to full ReState.</p>
-  </div>
+  <details class="paper-figure">
+    <summary>View break-down ablation (VersaCoT-10K)</summary>
+    <figure class="card wide-fig">
+      <img class="zoom" src="imgs/break-down-ablation.png" alt="Table 4: ablation of URSM, self-history states, and iterative self-refinement on VersaCoT-10K across three backbones" loading="lazy" />
+      <figcaption><b>Table 4.</b> Break-down ablation on VersaCoT-10K. SHS = training-time self-history states; ISR = inference-time iterative self-refinement. Both are components of CRSL. Values in parentheses indicate the gap to full <strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong>.</figcaption>
+    </figure>
+  </details>
 
-  <div class="card">
-    <div class="card-head">
-      <h3>How many refinement rounds?</h3>
-      <div class="seg" id="iter-seg">
-        <button class="on" data-ds="versacot">VersaCoT-10K</button>
-        <button data-ds="scienceqa">ScienceQA</button>
-        <button data-ds="m3cot">M&sup3;CoT</button>
-      </div>
-    </div>
-    <div class="chart-box"><canvas id="iter-chart"></canvas></div>
-    <p class="note">Paper Figure 4. Round 0 is the initial reasoning. One round already gives
-      +1.10–2.65 pts on VersaCoT-10K, +0.04–0.54 on ScienceQA and +1.99–3.62 on M&sup3;CoT;
-      gains concentrate in the first few rounds, then flatten.</p>
-  </div>
+  <details class="paper-figure">
+    <summary>View iterative refinement across three datasets (Figure 4)</summary>
+    <figure class="card wide-fig">
+      <img class="zoom" src="imgs/iterative-refinement.png" alt="Figure 4: accuracy over refinement rounds 0 to 9 on VersaCoT-10K, ScienceQA, and M³CoT across three backbones" loading="lazy" />
+      <figcaption><b>Figure 4.</b> Round 0 is the initial reasoning. One refinement round improves accuracy by 1.10%–2.65% on VersaCoT-10K, 0.04%–0.54% on ScienceQA, and 1.99%–3.62% on M&sup3;CoT. Most gains occur in the first few rounds, followed by stabilization with minor fluctuations.</figcaption>
+    </figure>
+  </details>
 
 </section>
 
@@ -429,7 +430,7 @@
   <div class="sec-head">
     <span class="sec-num">06</span>
     <h2>Same question, four methods</h2>
-    <p class="lede">Direct SFT, Multimodal-CoT, and MIND often write fluent CoTs grounded in a wrong visual observation or a misleading local cue, and the error propagates to the answer. Click a card to open the full comparison (Figs. 8–13).</p>
+    <p class="lede">Qualitative comparisons on VersaCoT-10K, ScienceQA, and M&sup3;CoT illustrate how visual evidence shapes reasoning outcomes. In these examples, Direct SFT, Multimodal-CoT, and MIND produce fluent reasoning but reach incorrect answers after misreading visual relationships, relying on misleading local cues, or introducing unsupported details. <strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong> identifies relevant evidence and integrates it into correct reasoning, from tracing diagram relationships and comparing concentrations to recognizing species and shapes. Click a card to view the full comparison (Figs. 8–13).</p>
   </div>
   <div class="gallery" id="gallery"></div>
 </section>
@@ -444,13 +445,11 @@
   </div>
   <div class="bib">
     <button class="copy" data-target="bib-code">Copy</button>
-<pre id="bib-code"><code>@article{restate2026,
-  title   = {From Stages to States: Unified Iterative Reasoning for Multimodal Large Language Models},
-  author  = {Chuang Yu and Xuefei Ma and Yuanhao Feng and Wuxiong Zeng and Bo Wang and
-             Minghong Cai and Dongming Wu and Fei Zhou and Chen Tang and Wenwen Tong and
-             Lewei Lu and Xiangyu Yue},
-  journal = {arXiv preprint arXiv:2610.15620},
-  year    = {2026}
+<pre id="bib-code"><code>@article{yu2026stages,
+  title={From Stages to States: Unified Iterative Reasoning for MLLMs},
+  author={Yu, Chuang and Ma, Xuefei and Feng, Yuanhao and Zeng, Wuxiong and Wang, Bo and Cai, Minghong and Wu, Dongming and Zhou, Fei and Tang, Chen and Tong, Wenwen and others},
+  journal={arXiv preprint arXiv:2610.15620},
+  year={2026}
 }</code></pre>
   </div>
 </section>

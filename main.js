@@ -27,6 +27,7 @@
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const formatReState = text => text.replace(/\bReState\b/g, '<strong class="restate-name"><span class="restate-re">Re</span><span class="restate-state">State</span></strong>');
 
 /* Colors are read from style.css :root so changing a CSS variable re-themes the charts. */
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -51,11 +52,11 @@ function initParadigmToggle() {
 /* ---------- 02 URSM tabs ---------- */
 const URSM_TEXT = {
   empty: { title: 'Reasoning construction', cls: 's-empty', flow: ['φ', 'M<sub>θ</sub>', 'R<sup>+</sup>'],
-    body: 'Given an empty state, the model builds an initial reasoning chain from the multimodal input — the familiar “generate a CoT” behavior.' },
-  pos: { title: 'Correct-reasoning preservation', cls: 's-pos', flow: ['R<sup>+</sup>', 'M<sub>θ</sub>', 'R<sup>+</sup>'],
-    body: 'Given a valid state, the model keeps the valid evidence while improving completeness and consistency — it learns <em>not</em> to break what already works.' },
-  neg: { title: 'Erroneous-reasoning correction', cls: 's-neg', flow: ['R<sup>−</sup>', 'M<sub>θ</sub>', 'R<sup>+</sup>'],
-    body: 'Given an erroneous state, the model revisits the original multimodal evidence and corrects the faulty part — self-correction without a separate critic.' },
+    body: 'Given an empty state, the model builds an initial reasoning chain from the multimodal input, corresponding to the familiar “generate a CoT” behavior.' },
+  pos: { title: 'Reasoning preservation', cls: 's-pos', flow: ['R<sup>+</sup>', 'M<sub>θ</sub>', 'R<sup>+</sup>'],
+    body: 'Given a valid state, the model keeps the valid evidence while improving completeness and consistency. It learns to retain what already works.' },
+  neg: { title: 'Reasoning correction', cls: 's-neg', flow: ['R<sup>−</sup>', 'M<sub>θ</sub>', 'R<sup>+</sup>'],
+    body: 'Given an erroneous state, the model revisits the original multimodal evidence and corrects the faulty part without a separate critic.' },
 };
 function initURSM() {
   const body = $('#ursm-body');
@@ -100,9 +101,10 @@ const FROM_LABEL = {
 };
 function initDemo() {
   const tabs = $('#case-tabs');
-  let ci = 0, ri = 0, timer = null;
+  const defaultCase = Math.max(0, CASES.findIndex(c => c.id === 'scienceqa'));
+  let ci = defaultCase, ri = 0, timer = null;
 
-  tabs.innerHTML = CASES.map((c, i) => `<button data-i="${i}" class="${i === 0 ? 'on' : ''}">${c.label}</button>`).join('');
+  tabs.innerHTML = CASES.map((c, i) => `<button data-i="${i}" class="${i === defaultCase ? 'on' : ''}">${c.label}</button>`).join('');
   $$('button', tabs).forEach(b => b.addEventListener('click', () => { stop(); loadCase(+b.dataset.i); }));
 
   function loadCase(i) {
@@ -142,7 +144,7 @@ function initDemo() {
         <span>Model choice</span><b>${c.options[r.choice]}</b><em>${r.ok ? '✓ correct' : '✗ wrong'}</em>
       </div>
       ${ri === 0 ? `<p class="r-note">${c.note}</p>` : ''}
-      ${last ? '<p class="r-note">Later rounds (Round-N) keep the same answer — the state has converged.</p>' : ''}`;
+      ${last ? '<p class="r-note">Later rounds (Round-N) keep the same answer, indicating that the state has converged.</p>' : ''}`;
     $('#r-card').classList.remove('flash'); void $('#r-card').offsetWidth; $('#r-card').classList.add('flash');
   }
 
@@ -156,7 +158,7 @@ function initDemo() {
     if (ri === CASES[ci].rounds.length - 1) { ri = -1; step(1); }
     timer = setInterval(() => { if (ri >= CASES[ci].rounds.length - 1) return stop(); step(1); }, 3200);
   });
-  loadCase(0);
+  loadCase(defaultCase);
 }
 
 /* ---------- 04 domains ---------- */
@@ -190,7 +192,7 @@ function initPaperTable() {
     const body = t.rows.map(r => r[0] === 'g'
       ? `<tr class="grp zs-row"><td colspan="${span}">${r[1]}</td></tr>`
       : `<tr class="${r[0] === 'o' ? 'hl' : ''}${r[0] === 'z' ? ' zs-row' : ''}">` +
-        r.slice(1, 1 + t.lead.length).map(v => `<td>${v}</td>`).join('') +
+        r.slice(1, 1 + t.lead.length).map(v => `<td>${formatReState(v)}</td>`).join('') +
         r.slice(1 + t.lead.length).map(cell).join('') + '</tr>').join('');
     tbl.innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
     tbl.classList.toggle('compact', !showAll);
@@ -217,7 +219,7 @@ function initBreakdown() {
     BREAKDOWN.cols.map(c => `<th rowspan="2">${c}</th>`).join('') +
     '</tr><tr><th>SHS</th><th>ISR</th></tr></thead><tbody>' +
     BREAKDOWN.rows.map((r, i) => `<tr class="${i === BREAKDOWN.rows.length - 1 ? 'hl' : ''}">` +
-      `<td>${r[0]}</td><td>${mk(r[1])}</td><td>${mk(r[2])}</td><td>${mk(r[3])}</td>` +
+      `<td>${formatReState(r[0])}</td><td>${mk(r[1])}</td><td>${mk(r[2])}</td><td>${mk(r[3])}</td>` +
       r.slice(4).map(([v, gap]) => `<td>${v}${gap ? `<small class="gap">(${gap})</small>` : ''}</td>`).join('') +
       '</tr>').join('') + '</tbody>';
 }
@@ -227,12 +229,13 @@ function initGallery() {
   $('#gallery').innerHTML = COMPARE.map(c => `
     <figure class="gcard">
       <div class="gthumb"><img class="zoom" src="${c.img}" alt="${c.title}" loading="lazy" /></div>
-      <figcaption><span class="gds">${c.ds} · ${c.fig}</span><b>${c.title}</b><p>${c.gist}</p></figcaption>
+      <figcaption><span class="gds">${c.ds} · ${c.fig}</span><b>${c.title}</b><p>${formatReState(c.gist)}</p></figcaption>
     </figure>`).join('');
 }
 
 /* ---------- charts ---------- */
 function initCharts() {
+  if (!$('#iter-chart')) return;
   if (typeof Chart === 'undefined') { $$('.chart-box').forEach(b => b.innerHTML = '<p class="note">Charts need network access to load Chart.js.</p>'); return; }
   /* A chart created before fonts/layout settle can keep a stale width (on phones it
      used to render twice as wide as its card). Re-measure once everything is ready. */
@@ -316,7 +319,7 @@ function initMisc() {
     const txt = document.getElementById(btn.dataset.target).innerText.trim();
     (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(
       () => { btn.textContent = 'Copied'; setTimeout(() => btn.textContent = 'Copy', 1400); },
-      () => toast('Copy failed — select the text manually'));
+      () => toast('Copy failed. Please select the text manually.'));
   }));
   $$('[data-todo]').forEach(a => a.addEventListener('click', e => {
     if (a.getAttribute('href') === '#') { e.preventDefault(); toast(a.dataset.todo === 'code' ? 'Code will be released soon' : 'Link will be available soon'); }

@@ -36,6 +36,9 @@ em { font-style: italic; }
 .w-stage { color: var(--stage); }
 .w-state { color: var(--state); }
 .c-state { color: var(--state); }
+.restate-name { font-weight: 700; font-style: italic; }
+.restate-re { color: var(--stage); fill: var(--stage); }
+.restate-state { color: var(--state); fill: var(--state); }
 
 /* subtle dot grid behind everything = "state space" */
 body::before {
@@ -88,7 +91,7 @@ body::before {
 .sec-head { margin-bottom: 2rem; }
 .sec-num { font: 500 .8rem var(--f-mono); color: var(--state); }
 .sec-head h2 { font-family: var(--f-serif); font-weight: 400; font-size: clamp(2rem, 4vw, 2.7rem); line-height: 1.1; margin: .2rem 0 .6rem; letter-spacing: -.01em; }
-.lede { color: #3b4252; max-width: 50rem; margin: 0; }
+.lede { color: #3b4252; max-width: none; margin: 0; }
 .note { font-size: .82rem; color: var(--dim); margin: .7rem 0 0; }
 .block, .tldr { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
 .block.in, .tldr.in { opacity: 1; transform: none; }
@@ -112,6 +115,7 @@ body::before {
 .tg[data-mode="stage"].on { background: var(--stage-50); color: var(--stage); }
 .tg[data-mode="state"].on { background: var(--state-50); color: var(--state); }
 .paradigm-wrap { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 2rem 1.5rem; min-height: 280px; }
+#paradigm .paradigm-wrap > .toggle { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .65rem; width: fit-content; max-width: 100%; margin: 0 auto 2rem; }
 .pd { display: none; animation: fade .45s ease; }
 .pd.on { display: block; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
@@ -138,6 +142,9 @@ body::before {
 .s-neg { border-color: var(--err); color: var(--err); background: var(--err-50); }
 .s-hist { border-color: var(--mind); color: #4c45a8; background: #eeedfe; }
 details summary { cursor: pointer; font-size: .88rem; color: var(--dim); font-weight: 500; }
+.paper-figure { margin-top: 1.5rem; }
+.paper-figure > summary { width: fit-content; padding: .4rem 0; color: var(--stage); font-size: 1rem; }
+.paper-figure > summary:hover { color: var(--state); }
 
 /* ---------- 02 method ---------- */
 .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
@@ -370,3 +377,4 @@ mark.warnm { background: var(--warn-50); color: var(--warn); }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .block, .tldr { opacity: 1; transform: none; }
 }
+.sec-head.sub .lede + .lede { margin-top: .8rem; }

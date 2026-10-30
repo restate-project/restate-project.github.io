@@ -91,6 +91,7 @@ function jcircle(c, r, seed) {
   return `M${f1(A[0])} ${f1(A[1])} A${f1(r1)} ${f1(r2)} 0 1 1 ${f1(B[0])} ${f1(B[1])} A${f1(r2)} ${f1(r1)} 0 1 1 ${f1(A2[0])} ${f1(A2[1])}`;
 }
 const pt = p => `${f1(p[0])} ${f1(p[1])}`;
+const restateSVG = '<tspan class="restate-name"><tspan class="restate-re">Re</tspan><tspan class="restate-state">State</tspan></tspan>';
 /* text that stays readable when the figure is mirrored */
 const T = (x, y, s, size, flip, anchor = 'middle', fill) =>
   `<text text-anchor="${anchor}" font-size="${f1(size)}" ${fill ? `style="fill:${fill}"` : ''} transform="translate(${f1(x)} ${f1(y)}) scale(${flip < 0 ? -1 : 1} 1)">${s}</text>`;
@@ -325,7 +326,7 @@ const KIND = {
   step(rc, s, w, h, p, i, el) {
     s.append(rc.rectangle(p, p, w, h, { ...R0, fill: C.card, fillStyle: 'solid', seed: 101 + i }));
     const nx = el.nextElementSibling;
-    if (!nx) return;
+    if (!nx || !nx.matches('li')) return;
     const o = { stroke: C.state, strokeWidth: 2.2, roughness: 1, seed: 111 + i };
     if (nx.offsetTop > el.offsetTop + h / 2) {     // stacked (mobile): arrow down
       const x = p + w / 2, y1 = p + h + 3, y2 = p + h + 24;
@@ -426,8 +427,8 @@ const DECOR = [
   ['.props li', 'tag'],
   ['.timeline', 'frame'],
   ['.bib', 'board'],
-  ['.btn, .mini, .copy, .case-tabs button, .ut', 'btn'],
-  ['.seg, .toggle', 'select'],
+  ['.btn, .mini, .copy, .case-tabs button, .ut, #paradigm .tg', 'btn'],
+  ['.seg, .toggle:not(#paradigm .toggle)', 'select'],
   ['.sec-num', 'circ'],
   ['.sec-head h2', 'ul'],
 ];
@@ -490,7 +491,7 @@ function heroScene() {
     rc.line(96, 250, 84, 300, { ...ink, seed: 3 }), rc.line(344, 250, 356, 300, { ...ink, seed: 4 }),
     rc.rectangle(40, 70, 340, 180, { ...ink, fill: '#ffffff', fillStyle: 'solid', strokeWidth: 2.6, seed: 5 }),
     rc.line(58, 254, 362, 254, { ...ink, strokeWidth: 3.2, seed: 6 }));
-  const t0 = svgEl('text', { x: 60, y: 100, 'font-size': 22 }, svg); t0.textContent = 'ReState — today’s plan';
+  const t0 = svgEl('text', { x: 60, y: 100, 'font-size': 22 }, svg); t0.innerHTML = restateSVG + ': today’s plan';
   svg.append(rc.line(58, 106, 238, 104, { stroke: C.state, strokeWidth: 2, roughness: 1.5, seed: 7 }));
   ['#e0632e', '#2f6db5', '#2e8b57'].forEach((c, i) => svgEl('rect', { x: 236 + i * 20, y: 248, width: 15, height: 5, fill: c, rx: 2 }, svg));
 
@@ -675,7 +676,7 @@ function perched() {
     a.brain = (dt, now) => {
       const peek = 0.5 + 0.5 * Math.sin(a.t * 0.9);
       a.x = iterCard.offsetWidth * 0.32; a.y = (BONE.torso + LEG) * a.k * 0.62 + (1 - peek) * 26;
-      a.say = peek > 0.85 ? { text: 'round 1 already +2.65!', until: now + 100 } : null;
+      a.say = peek > 0.85 ? { text: 'round 1 already +2.65%!', until: now + 100 } : null;
     };
   }
   // method: URSM card, thinking ? then !
@@ -842,7 +843,7 @@ function makeCrowd() {
       for (let j = 1; j <= 5; j++) tail += ` L${f1(kx + Math.sin(now / 200 + j) * 5 * kk)} ${f1(ky + 13 * kk + j * 7 * kk)}`;
       return `<path class="sk-thin" d="M${pt(h)} Q${f1((h[0] + kx) / 2)} ${f1((h[1] + ky) / 2 + 22 * kk)} ${f1(kx)} ${f1(ky + 13 * kk)}"/>` +
         `<path style="fill:#ffd6e0;stroke-width:${f1(1.6 * kk)}" d="M${f1(kx)} ${f1(ky - 15 * kk)} L${f1(kx + 11 * kk)} ${f1(ky)} L${f1(kx)} ${f1(ky + 13 * kk)} L${f1(kx - 11 * kk)} ${f1(ky)} Z M${f1(kx)} ${f1(ky - 15 * kk)} L${f1(kx)} ${f1(ky + 13 * kk)}"/>` +
-        `<path class="sk-thin" d="${tail}"/>` + T(kx, ky - 19 * kk, 'ReState', 12 * kk, s.flipVis);
+        `<path class="sk-thin" d="${tail}"/>` + T(kx, ky - 19 * kk, restateSVG, 12 * kk, s.flipVis);
     };
     kite.brain = walker(kite, 0.016, (t, s) => ({ ...P.walk(s.ph, 0.6), aR1: 2.35, aR2: 0.2 }));
     // 6. reader on a crate
@@ -960,7 +961,7 @@ function crowdToggle(list) {
   };
   b.addEventListener('click', () => set(crowdWrap.classList.contains('off')));
   nav.appendChild(b);
-  let on = true; try { on = localStorage.getItem('restate-crowd') !== '0'; } catch (e) {}
+  let on = false; try { on = localStorage.getItem('restate-crowd') === '1'; } catch (e) {}
   set(on);
 }
 

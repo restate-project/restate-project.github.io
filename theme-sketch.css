@@ -196,6 +196,8 @@ html.theme-sketch .gap-note .warn { border-radius: 45% 55% 50% 48%; }
 
 /* ---------- controls ---------- */
 html.theme-sketch .toggle, html.theme-sketch .seg { background: transparent; border: 0; padding: 4px 6px; box-shadow: none; }
+html.theme-sketch #paradigm .paradigm-wrap > .toggle { padding: 4px 6px; gap: 1rem; }
+html.theme-sketch #paradigm .tg { border-radius: 0; padding: .65rem 1.1rem; }
 html.theme-sketch .tg, html.theme-sketch .seg button { background: transparent !important; box-shadow: none !important; color: var(--dim) !important; font: 1.05rem var(--f-sans); }
 html.theme-sketch .tg.on, html.theme-sketch .seg button.on { color: var(--ink) !important; font-weight: 700; }
 html.theme-sketch .mini, html.theme-sketch .copy, html.theme-sketch .case-tabs button, html.theme-sketch .ut {
@@ -249,6 +251,7 @@ html.theme-sketch .dom small { font-family: var(--f-sans); font-size: .85rem; }
 html.theme-sketch .fd { padding: 1.5rem 1.2rem 1rem; }
 html.theme-sketch .fd:nth-child(1) { rotate: -.9deg; } html.theme-sketch .fd:nth-child(2) { rotate: .6deg; } html.theme-sketch .fd:nth-child(3) { rotate: -.4deg; }
 html.theme-sketch .fd b { display: inline; color: var(--ink); font: 700 1.45rem var(--f-serif); background: linear-gradient(transparent 55%, var(--marker) 55% 90%, transparent 90%); }
+html.theme-sketch .findings .fd > b { white-space: nowrap; font-size: clamp(1.1rem, 2.2vw, 1.35rem); }
 html.theme-sketch .fd p { color: #3d3a34; font-size: 1rem; }
 html.theme-sketch .tbl td { font-family: var(--f-read); }
 html.theme-sketch .tbl th { font-family: var(--f-sans); font-size: .95rem; text-transform: none; letter-spacing: 0; }
